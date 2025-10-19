@@ -1,0 +1,106 @@
+/* Index sector */
+body {
+    margin: 0px;
+    background-color: #88BDBC;
+    font-family: 'Geologica', sans-serif;
+}
+
+a {
+    text-decoration: none;
+    color: #DEF2F1;
+}
+
+p {
+    margin: 0px;
+}
+
+.site_header {
+    padding: 1rem 0;
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background-color: #112D32;
+}
+
+.logo_text {
+    margin: 0px;
+}
+
+.logo_text a {
+    color: #DEF2F1;
+    padding-left: 20px;
+}
+
+.auth {
+    display: flex;
+    margin-right: 20px;
+    gap: 10px;
+}
+
+.profile_picture {
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+}
+
+.auth p {
+    color: gray;
+}
+
+.main_cont {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+}
+
+/* Authorization sector */
+.auth_cont {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #112D32;
+    padding: 20px;
+    border-radius: 15px;
+    width: fit-content;
+    max-width: 100%;
+    gap: 20px;
+    /*2c3e50*/
+}
+
+.auth_input {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: 0.2s;
+    width: 20vw;
+    height: 30px;
+    font-size: 18px;
+    text-indent: 5px;
+}
+
+.auth_input:focus {
+    outline: none;
+    border-color: black;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+#auth_button {
+    width: 5vw;
+}
+
+.auth_error {
+    display: none;
+    color:red;
+    font-size: 14px;
+}
+
+.auth_error:not(:empty) {
+    display: block;
+}
+
+.auth_text {
+    color: white;
+}

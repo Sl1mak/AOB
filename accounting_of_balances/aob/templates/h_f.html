@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>AccountingOfBalances</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="{% static 'styles/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="site_header">
+        <h1 class="logo_text">
+            <a href="/">Контроль остатков</a>
+        </h1>
+        <div class="auth">
+            {% if username %}
+                {% csrf_token %}
+                <img src="{% static 'img/user.png' %}" alt="profile" class="profile_picture">
+                <span>{{ username }}</span>
+                <button id="logout_button">Выйти</button>
+            {% else %}
+                <a href="/login">Войти</a>
+                <p>Или</p>
+                <a href="/register">Зарегистрироваться</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    {% block scripts %}
+        <script src="{% static 'app/h_f.js' %}"></script>
+    {% endblock %}
+</body>
+</html>

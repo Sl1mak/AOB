@@ -1,0 +1,22 @@
+{% extends 'h_f.html' %}
+{% load static %}
+
+{% block title %} Логин {% endblock %}
+
+{% block content %}
+    <div class="main_cont">
+        <div class="auth_cont">
+            {% csrf_token %}
+            <h1 class="auth_text">Войти</h1>
+            <input class="auth_input" id="log_name" type="text" placeholder="Логин">
+            <input class="auth_input" id="log_pass" type="password" placeholder="Пароль">
+            <p class="auth_error" id="error"></p>
+            <!--Проверку бд сделать на логин-->
+            <button id="auth_button">Войти</button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'app/login.js' %}"></script>
+{% endblock %}
