@@ -18,7 +18,7 @@
             {% if username %}
                 {% csrf_token %}
                 <img src="{% static 'img/user.png' %}" alt="profile" class="profile_picture">
-                <span>{{ username }}</span>
+                <span class="username">{{ username }}</span>
                 <button id="logout_button">Выйти</button>
             {% else %}
                 <a href="/login">Войти</a>
@@ -28,9 +28,17 @@
         </div>
     </header>
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+    {% block content %}{% endblock %}
+    
+    <footer>
+        <div class="contact">
+            <p class="footer_element">example@gmail.com</p>
+            <p class="footer_element">+1234567890</p>
+        </div>
+        <div class="rights">
+            <p class="footer_element">Все права защищены</p>
+        </div>
+    </footer>
     {% block scripts %}
         <script src="{% static 'app/h_f.js' %}"></script>
     {% endblock %}

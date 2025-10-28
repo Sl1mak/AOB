@@ -19,11 +19,17 @@ from django.urls import path
 from aob import views
 
 urlpatterns = [
-    path("", views.index, name='index'),
-    path("login", views.login),
-    path("register", views.register),
+    path('admin/', admin.site.urls),
 
+    path("", views.index, name='index'),
     path("createUser/", views.createUser, name='createUser'),
     path("loginUser/", views.loginUser, name='loginUser'),
+
+    path("login", views.login),
+    path("register", views.register),
+    path("createtable", views.createtable),
+ 
     path("logout/", views.logout, name='logout'),
+
+    path("table/<int:table_id>/add_row/", views.add_row, name='add_row'),
 ]

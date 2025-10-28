@@ -4,6 +4,87 @@
 {% block title %} Главная {% endblock %}
 
 {% block content %}
-    <h1>Главная</h1>
-    <p>Добро пожаловать на сайт!</p>
+    <div class="index_cont">
+            <div class="table_list_cont">
+                {% if username %}
+                    {% if tables %}
+                        <h1>Таблицы</h1>
+                        <ul>
+                            {% for table in tables %}
+                            <li><a href="/?table_id={{table.id}}">{{table.name}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>Таблицы не найдены.</p>
+                    {% endif %}
+                {% else %}
+                    <p>Войдите, чтобы увидеть таблицы.</p>
+                {% endif %}
+            </div>
+
+            <div class="table_cont">
+                {% if username %}
+                    {% if table %}
+                        <table>
+                            <thead>
+                                <tr>
+                                    {% for col in columns %}
+                                        <th>{{col.name}}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if rows %}
+                                {% for row in rows %}
+                                    <tr>
+                                    {% for cell in row %}
+                                        <td>{{ cell }}</td>
+                                    {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="{{ columns|length }}">Нет данных</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        <button id="add_row_button">Добавить строку</button>
+                        <div id="add_row_modal" class="modal">
+                            <div class="modal_content">
+                                <span class="close">&times;</span>
+                                <h2>Добавить строку в {{ table.name }}</h2>
+                                <form id="add_row_form" method="POST" action="{% url 'add_row' table.id %}">
+                                    {% csrf_token %}
+                                    {% for col in columns %}
+                                        <label>{{ col.name }}: <input type="text" name="col-{{ col.id }}"></label><br>
+                                    {% endfor %}
+                                    <button type="submit">Добавить</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% else %}
+                        <h1>Здравствуйте, {{username}}</h1>
+                        <p>У вас нет таблиц. <a href="/createtable">Создать?</a></p>
+                    {% endif %}
+                {% else %}
+                <h1>Главная</h1>
+                <p>Добро пожаловать на сайт!</p>
+                {% endif %}
+            </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById("add_row_modal");
+        const button = document.getElementById("add_row_button");
+        const span = document.getElementsByClassName("close")[0];
+
+        button.onclick = () => {
+            modal.style.display = "block";
+        }
+        span.onclick = () => {
+            modal.style.display = "none";
+        }
+        window.onclick = (event) => {if (event.target == modal ) modal.style.display = "none"; }
+    </script>
 {% endblock %}
