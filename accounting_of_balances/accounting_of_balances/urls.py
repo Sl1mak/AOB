@@ -27,9 +27,12 @@ urlpatterns = [
 
     path("login", views.login),
     path("register", views.register),
-    path("createtable", views.createtable),
+    path("create_table", views.create_table, name='create_table'),
+    path("delete_table/<int:table_id>/", views.delete_table, name='delete_table'),
  
     path("logout/", views.logout, name='logout'),
 
     path("table/<int:table_id>/add_row/", views.add_row, name='add_row'),
+    path("table/<int:table_id>/edit_row/<int:row_id>/", views.edit_row, name='edit_row'),
+    path("table/<int:table_id>/delete_row/<int:row_id>/", views.delete_row, name='delete_row'),
 ]

@@ -9,50 +9,117 @@
                 {% if username %}
                     {% if tables %}
                         <h1>Таблицы</h1>
-                        <ul>
+                        <ul class="table_list">
                             {% for table in tables %}
                             <li><a href="/?table_id={{table.id}}">{{table.name}}</a></li>
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p>Таблицы не найдены.</p>
+                        <h3>Таблицы не найдены.</h3>
                     {% endif %}
+                    <button id="create_table_open_modal_button">Создать таблицу</button>
+                    <div id="create_table_modal" class="modal">
+                        <div class="modal_content">
+                            <span id="close_table_modal" class="close">&times;</span>
+                            <h2>Создание таблицы</h2>
+                            <form id="create_table_form">
+                                {% csrf_token %}
+                                <input
+                                    type="text"
+                                    id="table_name"
+                                    name="name"
+                                    placeholder="Название таблицы"
+                                    required
+                                />
+
+                                <div id="columns_container">
+                                    <div class="column_item"></div>
+                                    <input
+                                        type="text"
+                                        name="column_name[]"
+                                        placeholder="Название колонки"
+                                        class="column_input"
+                                    />
+                                    <button type="button" class="delete_column_button">Удалить</button>
+                                </div>
+
+                                <button type="button" id="add_column_button">Добавить колонку</button>
+                                <button type="submit">Создать</button>
+                            </form>
+
+                            <p id="status_message"></p>
+                        </div>
+                    </div>
                 {% else %}
                     <p>Войдите, чтобы увидеть таблицы.</p>
                 {% endif %}
             </div>
 
             <div class="table_cont">
-                {% if username %}
-                    {% if table %}
-                        <table>
-                            <thead>
-                                <tr>
-                                    {% for col in columns %}
-                                        <th>{{col.name}}</th>
-                                    {% endfor %}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% if rows %}
-                                {% for row in rows %}
+            {% if username %}
+                {% if table %}
+                    <h1>{{ table.name }}</h1>
+                        <div class="table_with_buttons">
+                            <table class="table">
+                                <thead>
                                     <tr>
-                                    {% for cell in row %}
-                                        <td>{{ cell }}</td>
-                                    {% endfor %}
+                                        {% for col in columns %}
+                                            <th>{{col.name}}</th>
+                                        {% endfor %}
                                     </tr>
+                                </thead>
+                                <tbody>
+                                    {% if rows %}
+                                        {% for r in rows %}
+                                            <tr class="row">
+                                                {% for cell in r.cells %}
+                                                    <td>{{ cell }}</td>
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="{{ columns|length }}">Нет данных</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                            <div class="table_row_buttons">
+                                {% for r in rows %}
+                                <div class="row_buttons">
+                                    <button type="button" class="edit_row_button" data-row-id="{{ r.row.id }}" data-table-id="{{ table.id}}">
+                                        <img src="{% static 'img/edit.png' %}" alt="Изменить" width="20" height="20">
+                                    </button>
+                                    <form method="POST" action="{%  url 'delete_row' table.id r.row.id%}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="delete_row_button">
+                                            <img src="{% static 'img/delete.png' %}" alt="Удалить" width="20" height="20">
+                                        </button>
+                                    </form>
+                                </div>
                                 {% endfor %}
-                                {% else %}
-                                <tr>
-                                    <td colspan="{{ columns|length }}">Нет данных</td>
-                                </tr>
-                                {% endif %}
-                            </tbody>
-                        </table>
-                        <button id="add_row_button">Добавить строку</button>
+                            </div>
+                        </div>
+                        <div id="edit_row_modal" class="modal">
+                            <div class="modal_content">
+                                <span class="close" id="close_edit_row_modal">&times;</span>
+                                <h2>Редактирование строки</h2>
+                                <form id="edit_row_form" method="POST">
+                                    {% csrf_token %}
+                                    {% for col in columns %}
+                                        <label>{{ col.name }}: <input type="text" name="col-{{ col.id }}" id="edit_col_{{ col.id }}"></label><br>
+                                    {% endfor %}
+                                    <button type="submit">Сохранить</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="table_buttons_div">
+                            <button type="button" id="delete_table_button" data-table-id="{{ table.id }}">Удалить таблицу</button>
+                            <button id="add_row_button">Добавить строку</button>
+                        </div>
                         <div id="add_row_modal" class="modal">
                             <div class="modal_content">
-                                <span class="close">&times;</span>
+                                <span class="close"">&times;</span>
                                 <h2>Добавить строку в {{ table.name }}</h2>
                                 <form id="add_row_form" method="POST" action="{% url 'add_row' table.id %}">
                                     {% csrf_token %}
@@ -65,26 +132,14 @@
                         </div>
                     {% else %}
                         <h1>Здравствуйте, {{username}}</h1>
-                        <p>У вас нет таблиц. <a href="/createtable">Создать?</a></p>
+                        <p>Выберите таблицу для отображения</p>
                     {% endif %}
                 {% else %}
                 <h1>Главная</h1>
                 <p>Добро пожаловать на сайт!</p>
-                {% endif %}
+            {% endif %}
             </div>
     </div>
 
-    <script>
-        const modal = document.getElementById("add_row_modal");
-        const button = document.getElementById("add_row_button");
-        const span = document.getElementsByClassName("close")[0];
-
-        button.onclick = () => {
-            modal.style.display = "block";
-        }
-        span.onclick = () => {
-            modal.style.display = "none";
-        }
-        window.onclick = (event) => {if (event.target == modal ) modal.style.display = "none"; }
-    </script>
+    <script src="{% static 'app/index.js' %}"></script>
 {% endblock %}

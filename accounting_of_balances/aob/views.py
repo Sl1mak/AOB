@@ -8,7 +8,9 @@ def h_f(request):
 
 def index(request):
     username = request.session.get("username")
-    tables = Table.objects.all()
+    user_id = request.session.get("user_id")
+
+    tables = Table.objects.filter(user_id=user_id)
 
     table_id = request.GET.get("table_id")
     table = None
@@ -18,17 +20,23 @@ def index(request):
     if table_id:
         table = get_object_or_404(
             Table.objects.prefetch_related("columns", "rows__cells"), 
-            id=table_id
+            id=table_id,
+            user_id=user_id
         )
 
         columns = list(table.columns.all())
+        rows = list(table.rows.all())
 
+        rows_data = []
         for row in table.rows.all():
-            cells = []
+            cell_value = []
             for col in columns:
                 cell = next((c for c in row.cells.all() if c.column_id == col.id), None)
-                cells.append(cell.value if cell else "")
-            rows_data.append(cells)
+                cell_value.append(cell.value if cell else "")
+            rows_data.append({
+                "row": row,
+                "cells": cell_value
+            })
 
     context = {
         "username": username,
@@ -100,8 +108,9 @@ def logout(request):
     return JsonResponse({"status": "ok", "message": "Выход из аккаунта.",})
 
 def table_list(request):
-    tables = Table.objects.all()
-    return render(request, "index.html", {"tables": tables})
+    user_id = request.session.get("user_id")    
+    tables = Table.objects.filter(username_id=user_id)
+    return render(request, "index.html", {"tables": tables, "username": request.session.get("username")})
 
 def table_view(request):
     table = get_object_or_404(Table.objects.prefetch_related("columns", "rows__cells"), id=table_id)
@@ -116,6 +125,41 @@ def table_view(request):
     return render(request, "index.html", {'table': table, 'columns': columns, 'rows': rows_data})
 
 @transaction.atomic
+def create_table(request):
+    if request.method == "POST":
+        user_id = request.session.get("user_id")
+        if not user_id:
+            return JsonResponse({"status": "error", "message": "Пользователь не авторизован."})
+
+        user = get_object_or_404(User, id=user_id)
+        name = request.POST.get("name")
+        columns_names = request.POST.getlist("column_name[]")
+
+        if not name:
+            return JsonResponse({"status": "error", "message": "Введите название таблицы."})
+        
+        if Table.objects.filter(name=name, user=user).exists():
+            return JsonResponse({"status": "error", "message": "Таблица с таким названием уже существует."})
+        
+        for col_name in columns_names:
+            if not col_name:
+                return JsonResponse({"status": "error", "message": "Введите названия всех колонок."})
+
+        table = Table.objects.create(name=name, user=user)
+        for col_name in columns_names:
+            Column.objects.create(table=table, name=col_name)
+        
+        return JsonResponse({"status": "ok", "message": "Таблица успешно создана.", "table_id": table.id})
+
+    return JsonResponse({"status": "error", "message": "Метод не поддерживается."}, status=400)
+
+@transaction.atomic
+def delete_table(request, table_id):
+    table = get_object_or_404(Table, id=table_id)
+    table.delete()
+    return JsonResponse({"status": "ok", "message": "Таблица успешно удалена."})
+
+@transaction.atomic
 def add_row(request, table_id):
     table = get_object_or_404(Table, id=table_id)
 
@@ -125,3 +169,18 @@ def add_row(request, table_id):
             value = request.POST.get(f"col-{col.id}", '')
             Cell.objects.create(row=row, column=col, value=value)
         return redirect(f"/?table_id={table.id}")
+
+def delete_row(request, table_id, row_id):
+    row = get_object_or_404(Row, id=row_id)
+    row.delete()
+    return redirect(f"/?table_id={table_id}")
+
+def edit_row(request, table_id, row_id):
+    row = get_object_or_404(Row, id=row_id)
+    if request.method == "POST":
+        for col in row.table.columns.all():
+            value = request.POST.get(f"col-{col.id}", '')
+            cell, _ = Cell.objects.get_or_create(row=row, column=col)
+            cell.value = value
+            cell.save()
+        return redirect(f"/?table_id={table_id}")

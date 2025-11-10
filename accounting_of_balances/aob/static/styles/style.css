@@ -26,6 +26,10 @@ footer {
     background-color: #112D32;
 }
 
+ul {
+    margin: 0px;
+}
+
 .site_header {
     padding: 1rem 0;
     width: 100%;
@@ -98,17 +102,84 @@ footer {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     background-color: #78a6a5;
     width: 20%;
 }
 
+.table_list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-left: 50px;
+}
+
 .table_cont {
+    width: 80%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 80%;
 }
+
+.table_with_buttons {
+    width: 100%;
+    display: flex;
+    align-items: start;
+    justify-content: center;
+    gap: 3px;
+}
+
+.table {
+    width: 95%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    border: 1px solid #000
+}
+
+.table th, .table td {
+    border: 1px solid #000;
+    width: 90%;
+    padding: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.row {
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #afafaf;
+    height: 38px;
+}
+
+.table_row_buttons{
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    width: 60px;
+    padding-top: 38px;
+}
+
+.row_buttons {
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.row_buttons button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.row_buttons button:hover {
+    transform: scale(1.15);
+}
+
 
 .modal {
     display: none;
@@ -137,6 +208,13 @@ footer {
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
+}
+
+.table_buttons_div {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    width: 97%;
 }
 
 /* Authorization sector */

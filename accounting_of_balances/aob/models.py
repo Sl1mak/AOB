@@ -9,22 +9,14 @@ class User(models.Model):
 
 class Table(models.Model):
     name = models.CharField(max_length = 50)
+    user = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'tables')
 
     def __str__(self):
         return self.name
 
 class Column(models.Model):
-    DATA_TYPES = (
-        ('text', 'Text'),
-        ('int', 'Integer'),
-        ('float', 'Float'),
-        ('bool', 'Boolean'),
-        ('date', 'Date'),
-    )
-
     name = models.CharField(max_length = 50)
     table = models.ForeignKey(Table, on_delete = models.CASCADE, related_name = 'columns')
-    data_type = models.CharField(max_length = 10, choices = DATA_TYPES)
     order = models.PositiveIntegerField(default = 0)
 
     class Meta:
